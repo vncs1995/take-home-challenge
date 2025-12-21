@@ -2,11 +2,10 @@ import { Pressable, StyleSheet, View } from "react-native";
 import Icon from "@expo/vector-icons/Ionicons";
 import { useCurrentThemeScheme } from "../hooks/useCurrentThemeScheme";
 import { getColors } from "../theme/tokens/alias/colors";
-import { getComponentTokens } from "../theme/tokens/components";
 import { type ThemeScheme } from "../theme/types";
 import { numbersAliasTokens } from "../theme/tokens/alias/numbers";
 
-function getStyleForTheme(theme: ThemeScheme, componentTokens: any) {
+function getStyleForTheme(theme: ThemeScheme) {
   const { spacing, borderRadius, outlineHeight } = numbersAliasTokens;
   const colors = getColors(theme);
 
@@ -35,9 +34,8 @@ function getStyleForTheme(theme: ThemeScheme, componentTokens: any) {
 export const ThemeSwitcher = () => {
   const { value, setValue } = useCurrentThemeScheme();
   const colors = getColors(value);
-  const componentTokens = getComponentTokens(value);
   const { sizing } = numbersAliasTokens;
-  const styles = getStyleForTheme(value, componentTokens);
+  const styles = getStyleForTheme(value);
 
   function toggleTheme() {
     setValue(value === "light" ? "dark" : "light");
