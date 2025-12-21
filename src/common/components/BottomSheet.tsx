@@ -1,10 +1,28 @@
-import { TrueSheet, TrueSheetProps } from "@lodev09/react-native-true-sheet"
-import { forwardRef } from "react"
+import { forwardRef, useImperativeHandle, useState } from "react"
+import { Modal, View, type ModalProps } from "react-native"
 
-export type BottomSheet = TrueSheet
+export type BottomSheetRef = {
+  present: () => void;
+  dismiss: () => void;
+  isPresented: () => boolean;
+};
 
-export const BottomSheet = forwardRef<TrueSheet, TrueSheetProps>(
+export const BottomSheet = forwardRef<BottomSheetRef, ModalProps>(
 	function BottomSheet(props, ref) {
-		return <TrueSheet ref={ref} {...props} />
+		const [isVisible, setIsVisible] = useState<boolean>(false)
+
+		useImperativeHandle(ref, () => ({
+			present: () => setIsVisible(true),
+			dismiss: () => setIsVisible(false),
+			isPresented: () => isVisible,
+		}));
+
+		return (
+			<Modal visible={isVisible} {...props}>
+				<View style={{ flex: 1 }}>
+				{props.children}
+				</View>
+			</Modal>
+		)
 	}
 )
