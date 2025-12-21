@@ -5,6 +5,10 @@ import { Button } from "../common/components/Button"
 import { EstimateRow, EstimateSection, UnitOfMeasure } from "@/data"
 import { useState } from "react"
 import { TextField } from "../common/components/TextField"
+import { numbersAliasTokens } from "../common/theme/tokens/alias/numbers"
+import { getColors } from "../common/theme/tokens/alias/colors"
+import { type ThemeScheme } from "../common/theme/types"
+import { useCurrentThemeScheme } from "../common/hooks/useCurrentThemeScheme"
 
 type EditFormProps = {
 	mode: "item" | "section"
@@ -17,7 +21,47 @@ function isEstimateRow(data: any): data is EstimateRow {
 	return "price" in data && "quantity" in data && "uom" in data
 }
 
+function getStyleForTheme(theme: ThemeScheme) {
+	const { spacing, borderRadius } = numbersAliasTokens
+	const colors = getColors(theme)
+
+	return StyleSheet.create({
+		container: {
+			padding: spacing.sm,
+		},
+		field: {
+			marginBottom: spacing.sm,
+		},
+		label: {
+			color: colors.text.primary,
+			marginBottom: spacing["3xs"],
+		},
+		input: {
+			borderWidth: 1,
+			borderColor: colors.outline.medium,
+			borderRadius: borderRadius.sm,
+			padding: spacing.xs,
+			marginTop: spacing["3xs"],
+			backgroundColor: colors.layer.solid.light,
+			color: colors.text.primary,
+		},
+		formActions: {
+			flexDirection: "row",
+			justifyContent: "flex-end",
+			gap: spacing["2xs"],
+			marginTop: spacing.lg,
+		},
+		button: {
+			minWidth: 100,
+		},
+	})
+}
+
 export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
+	const { value: theme } = useCurrentThemeScheme()
+	const styles = getStyleForTheme(theme)
+	const colors = getColors(theme)
+
 	const [title, setTitle] = useState(data.title)
 	const [price, setPrice] = useState(
 		isEstimateRow(data) ? data.price.toString() : ""
@@ -45,40 +89,39 @@ export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.header}>
-				Edit {mode === "item" ? "Item" : "Section"}
-			</Text>
-
 			<View style={styles.field}>
-				<Text>Title</Text>
+				<Text style={styles.label}>Title</Text>
 				<TextField
 					style={styles.input}
 					value={title}
 					onChangeText={setTitle}
 					placeholder={`Enter ${mode} title`}
+					placeholderTextColor={colors.text.tertiary}
 				/>
 			</View>
 
 			{mode === "item" && (
 				<>
 					<View style={styles.field}>
-						<Text>Price</Text>
+						<Text style={styles.label}>Price</Text>
 						<TextField
 							style={styles.input}
 							value={price}
 							onChangeText={setPrice}
 							keyboardType="decimal-pad"
 							placeholder="Enter price"
+							placeholderTextColor={colors.text.tertiary}
 						/>
 					</View>
 					<View style={styles.field}>
-						<Text>Quantity</Text>
+						<Text style={styles.label}>Quantity</Text>
 						<TextField
 							style={styles.input}
 							value={quantity}
 							onChangeText={setQuantity}
 							keyboardType="decimal-pad"
 							placeholder="Enter quantity"
+							placeholderTextColor={colors.text.tertiary}
 						/>
 					</View>
 				</>
@@ -99,31 +142,3 @@ export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
 		</View>
 	)
 }
-
-const styles = StyleSheet.create({
-	container: {
-		padding: 16,
-	},
-	header: {
-		marginBottom: 16,
-	},
-	field: {
-		marginBottom: 16,
-	},
-	input: {
-		borderWidth: 1,
-		borderColor: "#ccc",
-		borderRadius: 8,
-		padding: 12,
-		marginTop: 4,
-	},
-	formActions: {
-		flexDirection: "row",
-		justifyContent: "flex-end",
-		gap: 8,
-		marginTop: 24,
-	},
-	button: {
-		minWidth: 100,
-	},
-})

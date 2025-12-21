@@ -95,7 +95,7 @@ export default function EstimateScreen() {
         </View>
       </ScrollView>
 
-      <BottomSheet ref={bottomSheetRef}>
+      <BottomSheet ref={bottomSheetRef} title={`Edit ${editMode?.type === "item" ? "Item" : "Section"}`}>
         {editMode && (
           <EditForm
             key={editMode.data.id}

@@ -15,6 +15,7 @@ import { getColors } from "../theme/tokens/alias/colors";
 import { type ThemeScheme } from "../theme/types";
 import { getColorWithAlpha } from "../lib/colors";
 import { useCurrentThemeScheme } from "../hooks/useCurrentThemeScheme";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export type BottomSheetRef = {
   present: () => void;
@@ -42,7 +43,7 @@ function getStyleForTheme(theme: ThemeScheme) {
       backgroundColor: getColorWithAlpha(colors.core.flat.black, 55),
     },
     sheet: {
-      backgroundColor: colors.layer.solid.dark,
+      backgroundColor: colors.layer.solid.light,
       borderTopLeftRadius: borderRadius["2xl"],
       borderTopRightRadius: borderRadius["2xl"],
       paddingBottom: spacing.sm,
@@ -64,7 +65,7 @@ function getStyleForTheme(theme: ThemeScheme) {
       borderRadius: borderRadius.pill,
       marginTop: spacing["2xs"],
       marginBottom: spacing["2xs"],
-      backgroundColor: getColorWithAlpha(colors.core.flat.white, 25),
+      backgroundColor: colors.outline.dark,
     },
     header: {
       flexDirection: "row",
@@ -76,12 +77,11 @@ function getStyleForTheme(theme: ThemeScheme) {
       width: spacing["2xl"],
       height: spacing["2xl"],
       borderRadius: borderRadius.pill,
-      backgroundColor: getColorWithAlpha(colors.core.flat.white, 8),
+      backgroundColor: colors.layer.alpha.lightNeutral,
       alignItems: "center",
       justifyContent: "center",
     },
     closeIcon: {
-      color: getColorWithAlpha(colors.core.flat.white, 90),
       fontSize: sizing.icon.lg,
       lineHeight: sizing.icon.lg,
       marginTop: -spacing["3xs"] / 2,
@@ -89,13 +89,10 @@ function getStyleForTheme(theme: ThemeScheme) {
     title: {
       flex: 1,
       textAlign: "center",
-      color: getColorWithAlpha(colors.core.flat.white, 95),
+      color: colors.text.primary,
       fontSize: 18,
       fontWeight: "600",
       paddingHorizontal: spacing.xs,
-    },
-    headerRightSpacer: {
-      width: spacing["2xl"],
     },
     content: {
       paddingHorizontal: spacing.sm,
@@ -119,6 +116,8 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
   ) {
     const [isVisible, setIsVisible] = useState(false);
     const { value: theme } = useCurrentThemeScheme();
+	const { sizing } = numbersAliasTokens;
+	const colors = getColors(theme);
     const styles = getStyleForTheme(theme);
     const dismiss = () => {
       setIsVisible(false);
@@ -163,7 +162,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
                 accessibilityLabel="Close"
                 style={styles.closeButton}
               >
-                <Text style={styles.closeIcon}>×</Text>
+                <Ionicons name="close" size={sizing.icon.lg} color={colors.icon.primary} />
               </Pressable>
 
               {!!title && (
@@ -171,7 +170,6 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
                   {title}
                 </Text>
               )}
-              <View style={styles.headerRightSpacer} />
             </View>
             <View style={styles.content}>{children}</View>
           </View>
