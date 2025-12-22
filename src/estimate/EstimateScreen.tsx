@@ -8,24 +8,25 @@ import {
 } from "react-native";
 import { Text } from "../common/components/Text";
 import { BottomSheet, BottomSheetRef } from "../common/components/BottomSheet";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   calculateSectionTotal,
   calculateEstimateTotal,
 } from "../common/lib/estimate";
 import type { EstimateRow, EstimateSection } from "@/data";
 import { EditForm } from "./EditForm";
+import { AddForm } from "./AddForm";
 import { useEstimateScreen } from "./useEstimateScreen";
 import { TextField } from "../common/components/TextField";
 import { ThemeSwitcher } from "../common/components/ThemeSwitcher";
-import { Button } from "../common/components/Button";
 import { numbersAliasTokens } from "../common/theme/tokens/alias/numbers";
 import { getColors } from "../common/theme/tokens/alias/colors";
 import { type ThemeScheme } from "../common/theme/types";
 import { useCurrentThemeScheme } from "../common/hooks/useCurrentThemeScheme";
+import { AddButton } from "../common/components/AddButton";
 
 function getStyleForTheme(theme: ThemeScheme) {
-  const { spacing, borderRadius } = numbersAliasTokens;
+  const { spacing } = numbersAliasTokens;
   const colors = getColors(theme);
 
   return StyleSheet.create({
@@ -48,7 +49,7 @@ function getStyleForTheme(theme: ThemeScheme) {
     },
     section: {
       marginBottom: spacing.sm,
-      backgroundColor: colors.layer.solid.light,
+      backgroundColor: colors.layer.solid.medium,
     },
     sectionHeader: {
       flexDirection: "row",
@@ -65,7 +66,8 @@ function getStyleForTheme(theme: ThemeScheme) {
       flexDirection: "row",
       padding: spacing.sm,
       borderBottomWidth: 1,
-      borderBottomColor: colors.outline.light,
+      borderBottomColor: colors.layer.solid.medium,
+      backgroundColor: colors.layer.solid.light,
       justifyContent: "space-between",
       alignItems: "center",
     },
@@ -104,6 +106,10 @@ function getStyleForTheme(theme: ThemeScheme) {
 
 export default function EstimateScreen() {
   const bottomSheetRef = useRef<BottomSheetRef>(null);
+  const [bottomSheetMode, setBottomSheetMode] = useState<
+    "edit" | "add-section" | "add-item" | null
+  >(null);
+  const [targetSectionId, setTargetSectionId] = useState<string | null>(null);
   const { value: theme } = useCurrentThemeScheme();
   const styles = getStyleForTheme(theme);
   const colors = getColors(theme);
@@ -116,22 +122,64 @@ export default function EstimateScreen() {
     handleStartSectionEdit,
     handleSaveItem,
     handleSaveSection,
+    handleAddSection,
+    handleAddItem,
     handleStopEdit,
   } = useEstimateScreen();
 
   const handleSectionPress = (section: EstimateSection) => {
     handleStartSectionEdit(section);
+    setBottomSheetMode("edit");
     bottomSheetRef.current?.present();
   };
 
   const handleItemPress = (item: EstimateRow) => {
     handleStartItemEdit(item);
+    setBottomSheetMode("edit");
+    bottomSheetRef.current?.present();
+  };
+
+  const handleAddSectionPress = () => {
+    setBottomSheetMode("add-section");
+    setTargetSectionId(null);
+    bottomSheetRef.current?.present();
+  };
+
+  const handleAddItemPress = (sectionId: string) => {
+    setBottomSheetMode("add-item");
+    setTargetSectionId(sectionId);
     bottomSheetRef.current?.present();
   };
 
   const handleCloseBottomSheet = () => {
     bottomSheetRef.current?.dismiss();
+    setBottomSheetMode(null);
+    setTargetSectionId(null);
     handleStopEdit();
+  };
+
+  const handleSaveNewSection = (data: { title: string }) => {
+    handleAddSection(data);
+    handleCloseBottomSheet();
+  };
+
+  const handleSaveNewItem = (data: {
+    title: string;
+    price: number;
+    quantity: number;
+    uom: any;
+  }) => {
+    if (targetSectionId) {
+      handleAddItem(targetSectionId, data);
+    }
+    handleCloseBottomSheet();
+  };
+
+  const getBottomSheetTitle = () => {
+    if (bottomSheetMode === "add-section") return "Add Group";
+    if (bottomSheetMode === "add-item") return "Add Item";
+    if (editMode?.type === "item") return "Edit Item";
+    return "Edit Group";
   };
 
   return (
@@ -143,13 +191,13 @@ export default function EstimateScreen() {
       <ScrollView>
         <View style={styles.headerButtons}>
           <ThemeSwitcher />
-          <Button variant="secondary" style={{ maxWidth: 118 }}>
-            + Add
-          </Button>
+          <AddButton text="Add" onPress={handleAddSectionPress} />
         </View>
         <TextField
           style={styles.titleInput}
           value={estimate.title}
+          multiline
+          numberOfLines={2}
           onChangeText={updateTitle}
           placeholder="Enter estimate title"
           placeholderTextColor={colors.text.tertiary}
@@ -160,8 +208,15 @@ export default function EstimateScreen() {
               onPress={() => handleSectionPress(section)}
               style={styles.sectionHeader}
             >
-              <Text style={styles.sectionHeaderText}>{section.title}</Text>
-              <Text style={styles.sectionHeaderText}>${calculateSectionTotal(section).toFixed(2)}</Text>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+              >
+                <Text style={styles.sectionHeaderText}>{section.title}</Text>
+                <AddButton onPress={() => handleAddItemPress(section.id)} />
+              </View>
+              <Text style={styles.sectionHeaderText}>
+                ${calculateSectionTotal(section).toFixed(2)}
+              </Text>
             </Pressable>
             {section.rows.map((row) => (
               <Pressable
@@ -175,25 +230,40 @@ export default function EstimateScreen() {
                     ${row.price.toFixed(2)} × {row.quantity} {row.uom}
                   </Text>
                 </View>
-                <Text style={styles.rowTotal}>${(row.price * row.quantity).toFixed(2)}</Text>
+                <Text style={styles.rowTotal}>
+                  ${(row.price * row.quantity).toFixed(2)}
+                </Text>
               </Pressable>
             ))}
           </View>
         ))}
         <View style={styles.estimateTotal}>
           <Text style={styles.estimateTotalText}>Total:</Text>
-          <Text style={styles.estimateTotalText}>${calculateEstimateTotal(estimate).toFixed(2)}</Text>
+          <Text style={styles.estimateTotalText}>
+            ${calculateEstimateTotal(estimate).toFixed(2)}
+          </Text>
         </View>
       </ScrollView>
 
-      <BottomSheet ref={bottomSheetRef} title={`Edit ${editMode?.type === "item" ? "Item" : "Section"}`}>
-        {editMode && (
+      <BottomSheet ref={bottomSheetRef} title={getBottomSheetTitle()}>
+        {bottomSheetMode === "edit" && editMode && (
           <EditForm
             key={editMode.data.id}
             mode={editMode.type}
             data={editMode.data}
             onSave={
               editMode.type === "item" ? handleSaveItem : handleSaveSection
+            }
+            onClose={handleCloseBottomSheet}
+          />
+        )}
+        {bottomSheetMode !== "edit" && bottomSheetMode !== null && (
+          <AddForm
+            mode={bottomSheetMode}
+            onSave={
+              bottomSheetMode === "add-section"
+                ? handleSaveNewSection
+                : handleSaveNewItem
             }
             onClose={handleCloseBottomSheet}
           />
