@@ -257,7 +257,7 @@ export default function EstimateScreen() {
             onClose={handleCloseBottomSheet}
           />
         )}
-        {bottomSheetMode !== "edit" && bottomSheetMode !== null && (
+        {(bottomSheetMode === "add-section" || bottomSheetMode === "add-item") && (
           <AddForm
             mode={bottomSheetMode}
             onSave={

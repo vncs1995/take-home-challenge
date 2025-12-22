@@ -96,7 +96,7 @@ export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
 					style={styles.input}
 					value={title}
 					onChangeText={setTitle}
-					placeholder={`Enter ${mode} title`}
+					label={`Enter ${mode} title`}
 					placeholderTextColor={colors.text.tertiary}
 				/>
 			</View>
@@ -110,7 +110,7 @@ export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
 							value={price}
 							onChangeText={setPrice}
 							keyboardType="decimal-pad"
-							placeholder="Enter price"
+							label="Enter price"
 							placeholderTextColor={colors.text.tertiary}
 						/>
 					</View>
@@ -121,7 +121,7 @@ export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
 							value={quantity}
 							onChangeText={setQuantity}
 							keyboardType="decimal-pad"
-							placeholder="Enter quantity"
+							label="Enter quantity"
 							placeholderTextColor={colors.text.tertiary}
 						/>
 					</View>
