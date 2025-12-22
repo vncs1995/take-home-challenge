@@ -23,14 +23,19 @@ function getStyleForTheme(theme: ThemeScheme) {
       width: "100%",
     },
     label: {
-      color: colors.text.tertiary,
-      marginLeft: spacing.sm,
-      marginBottom: spacing["3xs"],
+      position: "absolute",
+      top: -8,
+      left: spacing.sm,
+      zIndex: 2,
+      backgroundColor: colors.layer.solid.light,
+      paddingHorizontal: spacing["3xs"],
+      borderRadius: 999,
+      color: colors.text.secondary,
     },
     container: {
       height: 56,
       borderWidth: 1,
-      borderColor: colors.outline.dark,
+      borderColor: colors.outline.medium,
       borderRadius: borderRadius.md,
       backgroundColor: colors.layer.solid.light,
       flexDirection: "row",
@@ -43,6 +48,9 @@ function getStyleForTheme(theme: ThemeScheme) {
       borderRadius: borderRadius.sm,
       alignItems: "center",
       justifyContent: "center",
+    },
+    quantity: {
+        color: colors.text.primary,
     },
     buttonPressed: {
       backgroundColor: colors.layer.alpha.lightNeutral,
@@ -62,14 +70,15 @@ export function QuantityField({
 }: QuantityFieldProps) {
   const { value: theme } = useCurrentThemeScheme();
   const styles = getStyleForTheme(theme);
+  const colors = getColors(theme);
 
   return (
     <View style={styles.wrapper}>
-      <Text size="sm" style={styles.label}>
-        {label}
-      </Text>
-
       <View style={styles.container}>
+        <Text size="xs" style={styles.label}>
+          {label}
+        </Text>
+
         <Pressable
           onPress={onDecrement}
           hitSlop={10}
@@ -78,11 +87,11 @@ export function QuantityField({
             pressed && styles.buttonPressed,
           ]}
         >
-          <Ionicons name="remove" size={24} />
+          <Ionicons name="remove" size={24} color={colors.icon.primary} />
         </Pressable>
 
         <View style={styles.valueContainer}>
-          <Text weight="bold" size="md">
+          <Text weight="bold" size="md" style={styles.quantity}>
             {value}
           </Text>
         </View>
@@ -95,7 +104,7 @@ export function QuantityField({
             pressed && styles.buttonPressed,
           ]}
         >
-          <Ionicons name="add" size={24} />
+          <Ionicons name="add" size={24} color={colors.icon.primary} />
         </Pressable>
       </View>
     </View>

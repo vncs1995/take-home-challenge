@@ -11,6 +11,7 @@ import { numbersAliasTokens } from "../theme/tokens/alias/numbers";
 import { getColors } from "../theme/tokens/alias/colors";
 import { type ThemeScheme } from "../theme/types";
 import { useCurrentThemeScheme } from "../hooks/useCurrentThemeScheme";
+import { customFonts } from "../theme/fonts";
 
 export type TextFieldProps = TextInputProps & {
   label?: string;
@@ -19,6 +20,7 @@ export type TextFieldProps = TextInputProps & {
 function getStyleForTheme(theme: ThemeScheme) {
   const { spacing, borderRadius } = numbersAliasTokens;
   const colors = getColors(theme);
+  const inputFont = customFonts.regular.text.md;
 
   const HEIGHT = 56;
 
@@ -28,7 +30,10 @@ function getStyleForTheme(theme: ThemeScheme) {
       height: HEIGHT,
       justifyContent: "center",
     },
-
+    multiline: {
+      height: "auto",
+      minHeight: 56,
+    },
     label: {
       position: "absolute",
       left: spacing.sm,
@@ -56,18 +61,22 @@ function getStyleForTheme(theme: ThemeScheme) {
 
       paddingHorizontal: spacing.sm,
 
-      // this combo matches the screenshot better than just paddingTop
-      paddingTop: spacing.md,     // room for label when floated
-      paddingBottom: spacing.sm,  // keeps text vertically centered
+      paddingTop: spacing.md, // room for label when floated
+      paddingBottom: spacing.sm, // keeps text vertically centered
 
-      fontSize: 16,
+      // Inter 500 Medium, typography size 4
+      fontFamily: inputFont.fontFamily,
+      fontWeight: inputFont.fontWeight,
+      fontSize: inputFont.fontSize,
 
       // iOS: keep text baseline nice; Android: no-op
-      ...(Platform.OS === "android" ? { textAlignVertical: "center" as const } : {}),
+      ...(Platform.OS === "android"
+        ? { textAlignVertical: "center" as const }
+        : {}),
     },
 
     inputFocused: {
-      borderColor: colors.outline.dark ?? colors.text.secondary, // fallback if you don't have outline.dark
+      borderColor: colors.outline.dark,
     },
   });
 }
@@ -80,73 +89,80 @@ function getLabelColors(theme: ThemeScheme) {
   };
 }
 
-export const TextField = forwardRef<TextInput, TextFieldProps>(function TextField(
-  { label, value, defaultValue, onFocus, onBlur, style, ...props },
-  ref
-) {
-  const { value: theme } = useCurrentThemeScheme();
-  const styles = getStyleForTheme(theme);
-  const labelColors = getLabelColors(theme);
-  const colors = getColors(theme);
+export const TextField = forwardRef<TextInput, TextFieldProps>(
+  function TextField(
+    { label, value, defaultValue, onFocus, onBlur, style, multiline, ...props },
+    ref
+  ) {
+    const { value: theme } = useCurrentThemeScheme();
+    const styles = getStyleForTheme(theme);
+    const labelColors = getLabelColors(theme);
+    const colors = getColors(theme);
 
-  const [isFocused, setIsFocused] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
 
-  const hasValue =
-    value !== undefined
-      ? value.length > 0
-      : defaultValue !== undefined && defaultValue.length > 0;
+    const hasValue =
+      value !== undefined
+        ? value.length > 0
+        : defaultValue !== undefined && defaultValue.length > 0;
 
-  const animatedLabel = useRef(new Animated.Value(hasValue ? 1 : 0)).current;
+    const animatedLabel = useRef(new Animated.Value(hasValue ? 1 : 0)).current;
 
-  useEffect(() => {
-    Animated.timing(animatedLabel, {
-      toValue: isFocused || hasValue ? 1 : 0,
-      duration: 150,
-      useNativeDriver: false,
-    }).start();
-  }, [isFocused, hasValue, animatedLabel]);
+    useEffect(() => {
+      Animated.timing(animatedLabel, {
+        toValue: isFocused || hasValue ? 1 : 0,
+        duration: 150,
+        useNativeDriver: false,
+      }).start();
+    }, [isFocused, hasValue, animatedLabel]);
 
-  // Tweaked positions to match screenshot: label sits inside when empty,
-  // floats just above the input border when focused/filled.
-  const labelStyle = {
-    top: animatedLabel.interpolate({
-      inputRange: [0, 1],
-      outputRange: [18, -8],
-    }),
-    fontSize: animatedLabel.interpolate({
-      inputRange: [0, 1],
-      outputRange: [16, 12],
-    }),
-    color: animatedLabel.interpolate({
-      inputRange: [0, 1],
-      outputRange: [labelColors.inactive, labelColors.active],
-    }),
-  };
+    // floats just above the input border when focused/filled.
+    const labelStyle = {
+      top: animatedLabel.interpolate({
+        inputRange: [0, 1],
+        outputRange: [18, -8],
+      }),
+      fontSize: animatedLabel.interpolate({
+        inputRange: [0, 1],
+        outputRange: [16, 12],
+      }),
+      color: animatedLabel.interpolate({
+        inputRange: [0, 1],
+        outputRange: [labelColors.inactive, labelColors.active],
+      }),
+    };
 
-  return (
-    <View style={styles.wrapper}>
-      {label && <Animated.Text style={[styles.label, labelStyle]}>{label}</Animated.Text>}
+    return (
+      <View style={[styles.wrapper, multiline && styles.multiline]}>
+        {label && (
+          <Animated.Text style={[styles.label, labelStyle]}>
+            {label}
+          </Animated.Text>
+        )}
 
-      <TextInput
-        ref={ref}
-        value={value}
-        defaultValue={defaultValue}
-        style={[
-          styles.input,
-          isFocused && styles.inputFocused,
-          style,
-        ]}
-        placeholderTextColor={colors.text.tertiary}
-        onFocus={(e) => {
-          setIsFocused(true);
-          onFocus?.(e);
-        }}
-        onBlur={(e) => {
-          setIsFocused(false);
-          onBlur?.(e);
-        }}
-        {...props}
-      />
-    </View>
-  );
-});
+        <TextInput
+          ref={ref}
+          value={value}
+          defaultValue={defaultValue}
+          multiline={multiline}
+          style={[
+            styles.input,
+            multiline && styles.multiline,
+            isFocused && styles.inputFocused,
+            style,
+          ]}
+          placeholderTextColor={colors.text.tertiary}
+          onFocus={(e) => {
+            setIsFocused(true);
+            onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setIsFocused(false);
+            onBlur?.(e);
+          }}
+          {...props}
+        />
+      </View>
+    );
+  }
+);

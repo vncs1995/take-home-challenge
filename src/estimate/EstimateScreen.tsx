@@ -40,12 +40,15 @@ function getStyleForTheme(theme: ThemeScheme) {
       paddingHorizontal: spacing.md,
       paddingVertical: spacing.xs,
     },
+    titleInputContainer: {
+      backgroundColor: colors.layer.solid.medium,
+    },
     titleInput: {
       fontSize: 24,
       fontWeight: "bold",
-      padding: spacing.sm,
-      backgroundColor: colors.layer.solid.light,
+      backgroundColor: colors.layer.solid.medium,
       color: colors.text.primary,
+      borderWidth: 0,
     },
     section: {
       marginBottom: spacing.sm,
@@ -193,15 +196,17 @@ export default function EstimateScreen() {
           <ThemeSwitcher />
           <AddButton text="Add" onPress={handleAddSectionPress} />
         </View>
-        <TextField
-          style={styles.titleInput}
-          value={estimate.title}
-          multiline
-          numberOfLines={2}
-          onChangeText={updateTitle}
-          placeholder="Enter estimate title"
-          placeholderTextColor={colors.text.tertiary}
-        />
+        <View style={styles.titleInputContainer}>
+          <TextField
+            style={styles.titleInput}
+            value={estimate.title}
+            multiline
+            numberOfLines={2}
+            onChangeText={updateTitle}
+            placeholder="Enter estimate title"
+            placeholderTextColor={colors.text.tertiary}
+          />
+        </View>
         {estimate.sections.map((section) => (
           <View key={section.id} style={styles.section}>
             <Pressable
@@ -257,7 +262,8 @@ export default function EstimateScreen() {
             onClose={handleCloseBottomSheet}
           />
         )}
-        {(bottomSheetMode === "add-section" || bottomSheetMode === "add-item") && (
+        {(bottomSheetMode === "add-section" ||
+          bottomSheetMode === "add-item") && (
           <AddForm
             mode={bottomSheetMode}
             onSave={

@@ -1,10 +1,10 @@
 import React from "react"
 import { View, StyleSheet } from "react-native"
-import { Text } from "../common/components/Text"
 import { Button } from "../common/components/Button"
 import { EstimateRow, EstimateSection, UnitOfMeasure } from "@/data"
 import { useState } from "react"
 import { TextField } from "../common/components/TextField"
+import { QuantityField } from "../common/components/QuantityField"
 import { numbersAliasTokens } from "../common/theme/tokens/alias/numbers"
 import { getColors } from "../common/theme/tokens/alias/colors"
 import { type ThemeScheme } from "../common/theme/types"
@@ -31,10 +31,6 @@ function getStyleForTheme(theme: ThemeScheme) {
 		},
 		field: {
 			marginBottom: spacing.sm,
-		},
-		label: {
-			color: colors.text.primary,
-			marginBottom: spacing["3xs"],
 		},
 		input: {
 			borderWidth: 1,
@@ -68,11 +64,19 @@ export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
 		isEstimateRow(data) ? data.price.toString() : ""
 	)
 	const [quantity, setQuantity] = useState(
-		isEstimateRow(data) ? data.quantity.toString() : ""
+		isEstimateRow(data) ? data.quantity : 1
 	)
 	const [uom, setUom] = useState<UnitOfMeasure>(
 		isEstimateRow(data) ? data.uom : "EA"
 	)
+
+	const handleIncrement = () => {
+		setQuantity((prev) => prev + 1)
+	}
+
+	const handleDecrement = () => {
+		setQuantity((prev) => Math.max(1, prev - 1))
+	}
 
 	const handleSave = () => {
 		if (mode === "item") {
@@ -80,7 +84,7 @@ export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
 				...data,
 				title,
 				price: parseFloat(price),
-				quantity: parseFloat(quantity),
+				quantity,
 				uom,
 			})
 		} else {
@@ -91,7 +95,6 @@ export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
 	return (
 		<View style={styles.container}>
 			<View style={styles.field}>
-				<Text style={styles.label}>Title</Text>
 				<TextField
 					style={styles.input}
 					value={title}
@@ -104,25 +107,20 @@ export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
 			{mode === "item" && (
 				<>
 					<View style={styles.field}>
-						<Text style={styles.label}>Price</Text>
 						<TextField
 							style={styles.input}
 							value={price}
 							onChangeText={setPrice}
 							keyboardType="decimal-pad"
-							label="Enter price"
+							label="Cost"
 							placeholderTextColor={colors.text.tertiary}
 						/>
 					</View>
 					<View style={styles.field}>
-						<Text style={styles.label}>Quantity</Text>
-						<TextField
-							style={styles.input}
+						<QuantityField
 							value={quantity}
-							onChangeText={setQuantity}
-							keyboardType="decimal-pad"
-							label="Enter quantity"
-							placeholderTextColor={colors.text.tertiary}
+							onDecrement={handleDecrement}
+							onIncrement={handleIncrement}
 						/>
 					</View>
 				</>
