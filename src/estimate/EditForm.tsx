@@ -52,6 +52,7 @@ function getStyleForTheme(theme: ThemeScheme) {
 			marginTop: spacing.lg,
 		},
 		button: {
+			flex: 1,
 			minWidth: 100,
 		},
 	})
@@ -130,13 +131,6 @@ export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
 			<View style={styles.formActions}>
 				<Button onPress={handleSave} style={styles.button}>
 					Save
-				</Button>
-				<Button
-					variant="secondary"
-					onPress={onClose}
-					style={styles.button}
-				>
-					Cancel
 				</Button>
 			</View>
 		</View>

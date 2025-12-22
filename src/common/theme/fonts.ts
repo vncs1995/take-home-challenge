@@ -11,9 +11,11 @@ import { useFonts as useFontsFromExpo } from "expo-font"
 import type { TextStyle } from "react-native"
 import { numbersBaseTokens } from "./tokens/base/numbers"
 
-type FontSize = "xl" | "lg" | "md" | "sm" | "xs" | "xxs"
+export type FontSize = "xl" | "lg" | "md" | "sm" | "xs" | "xxs"
 
-type FontSpec = "headline" | "text"
+export type FontSpec = "headline" | "text"
+
+export type FontWeight = keyof CustomFonts
 
 type CustomFontVariant = {
 	[K in FontSpec]: K extends "headline"
