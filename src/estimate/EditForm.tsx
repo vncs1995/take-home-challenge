@@ -49,7 +49,6 @@ function getStyleForTheme(theme: ThemeScheme) {
 		},
 		button: {
 			flex: 1,
-			minWidth: 100,
 		},
 	})
 }
