@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Pressable } from "react-native";
-import { Text } from "../common/components/Text";
+import { View, StyleSheet } from "react-native";
 import { Button } from "../common/components/Button";
 import { UnitOfMeasure } from "@/data";
 import { TextField } from "../common/components/TextField";
+import { QuantityField } from "../common/components/QuantityField";
 import { numbersAliasTokens } from "../common/theme/tokens/alias/numbers";
 import { getColors } from "../common/theme/tokens/alias/colors";
 import { type ThemeScheme } from "../common/theme/types";
@@ -26,49 +26,6 @@ function getStyleForTheme(theme: ThemeScheme) {
     field: {
       marginBottom: spacing.sm,
     },
-    label: {
-      color: colors.text.primary,
-      marginBottom: spacing["3xs"],
-    },
-    input: {
-      borderWidth: 1,
-      borderColor: colors.outline.medium,
-      borderRadius: borderRadius.sm,
-      padding: spacing.xs,
-      marginTop: spacing["3xs"],
-      backgroundColor: colors.layer.solid.light,
-      color: colors.text.primary,
-    },
-    quantityContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-      marginTop: spacing["3xs"],
-      gap: spacing.xs,
-    },
-    quantityButton: {
-      width: spacing["2xl"],
-      height: spacing["2xl"],
-      borderRadius: borderRadius.sm,
-      backgroundColor: colors.layer.alpha.lightNeutral,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    quantityButtonPressed: {
-      backgroundColor: colors.layer.solid.dark,
-    },
-    quantityButtonText: {
-      color: colors.text.primary,
-    },
-    quantityInput: {
-      flex: 1,
-      borderWidth: 1,
-      borderColor: colors.outline.medium,
-      borderRadius: borderRadius.sm,
-      padding: spacing.xs,
-      backgroundColor: colors.layer.solid.light,
-      color: colors.text.primary,
-      textAlign: "center",
-    },
     formActions: {
       flexDirection: "row",
       justifyContent: "flex-end",
@@ -85,7 +42,6 @@ function getStyleForTheme(theme: ThemeScheme) {
 export function AddForm({ mode, onSave, onClose }: AddFormProps) {
   const { value: theme } = useCurrentThemeScheme();
   const styles = getStyleForTheme(theme);
-  const colors = getColors(theme);
 
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
@@ -129,69 +85,36 @@ export function AddForm({ mode, onSave, onClose }: AddFormProps) {
   return (
     <View style={styles.container}>
       <View style={styles.field}>
-        <Text style={styles.label}>Title</Text>
         <TextField
-          style={styles.input}
           value={title}
           onChangeText={setTitle}
-          placeholder={`Enter ${mode} title`}
-          placeholderTextColor={colors.text.tertiary}
+          label={mode === "add-item" ? "Item title" : "Group title"}
         />
       </View>
 
       {mode === "add-item" && (
         <>
           <View style={styles.field}>
-            <Text style={styles.label}>Price</Text>
             <TextField
-              style={styles.input}
               value={price}
               onChangeText={setPrice}
               keyboardType="decimal-pad"
-              placeholder="Enter price"
-              placeholderTextColor={colors.text.tertiary}
+              label="Price"
             />
           </View>
           <View style={styles.field}>
-            <Text style={styles.label}>Quantity</Text>
-            <View style={styles.quantityContainer}>
-              <Pressable
-                onPress={handleDecrement}
-                style={({ pressed }) => [
-                  styles.quantityButton,
-                  pressed && styles.quantityButtonPressed,
-                ]}
-              >
-                <Text weight="bold" size="lg" style={styles.quantityButtonText}>
-                  −
-                </Text>
-              </Pressable>
-              <TextField
-                style={styles.quantityInput}
-                value={quantity.toString()}
-                onChangeText={handleQuantityChange}
-                keyboardType="number-pad"
-                placeholderTextColor={colors.text.tertiary}
-              />
-              <Pressable
-                onPress={handleIncrement}
-                style={({ pressed }) => [
-                  styles.quantityButton,
-                  pressed && styles.quantityButtonPressed,
-                ]}
-              >
-                <Text weight="bold" size="lg" style={styles.quantityButtonText}>
-                  +
-                </Text>
-              </Pressable>
-            </View>
+            <QuantityField
+              value={quantity}
+              onDecrement={handleDecrement}
+              onIncrement={handleIncrement}
+            />
           </View>
         </>
       )}
 
       <View style={styles.formActions}>
         <Button onPress={handleSave} disabled={!isValid} style={styles.button}>
-          Add {mode === "add-item" ? "add-Item" : "add-Section"}
+          Add {mode === "add-item" ? "Item" : "Group"}
         </Button>
       </View>
     </View>
