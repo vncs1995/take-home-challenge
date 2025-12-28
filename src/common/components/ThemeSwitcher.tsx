@@ -6,11 +6,12 @@ import { type ThemeScheme } from "../theme/types";
 import { numbersAliasTokens } from "../theme/tokens/alias/numbers";
 
 function getStyleForTheme(theme: ThemeScheme) {
-  const { spacing, borderRadius, outlineHeight } = numbersAliasTokens;
+  const { sizing, borderRadius, outlineHeight, spacing } = numbersAliasTokens;
   const colors = getColors(theme);
 
   return StyleSheet.create({
     container: {
+      height: sizing.icon.xl,
       flexDirection: "row",
       justifyContent: "center",
       alignItems: "center",
@@ -20,7 +21,8 @@ function getStyleForTheme(theme: ThemeScheme) {
     toggleItem: {
       alignItems: "center",
       justifyContent: "center",
-      padding: spacing.xs,
+      height: sizing.icon.xl,
+      width: spacing["4xl"],
     },
     selected: {
       backgroundColor: colors.layer.solid.light,
@@ -44,7 +46,7 @@ export const ThemeSwitcher = () => {
   return (
     <Pressable onPress={toggleTheme}>
       <View
-        style={[styles.container, { backgroundColor: colors.layer.solid.dark }]}
+        style={styles.container}
       >
         <View style={[value === "light" && styles.selected, styles.toggleItem]}>
           <Icon

@@ -1,7 +1,6 @@
 import React from "react";
-import { View, StyleSheet, Pressable } from "react-native";
+import { StyleSheet, Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Button } from "./Button";
 import { numbersAliasTokens } from "../theme/tokens/alias/numbers";
 import { getColors } from "../theme/tokens/alias/colors";
 import { getComponentTokens } from "../theme/tokens/components";

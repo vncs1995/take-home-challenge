@@ -24,6 +24,7 @@ import { getColors } from "../common/theme/tokens/alias/colors";
 import { type ThemeScheme } from "../common/theme/types";
 import { useCurrentThemeScheme } from "../common/hooks/useCurrentThemeScheme";
 import { AddButton } from "../common/components/AddButton";
+import { Badge } from "../common/components/Badge";
 
 function getStyleForTheme(theme: ThemeScheme) {
   const { spacing } = numbersAliasTokens;
@@ -37,11 +38,14 @@ function getStyleForTheme(theme: ThemeScheme) {
     headerButtons: {
       flexDirection: "row",
       justifyContent: "space-between",
+      alignItems: "center",
       paddingHorizontal: spacing.md,
       paddingVertical: spacing.xs,
     },
-    titleInputContainer: {
-      backgroundColor: colors.layer.solid.medium,
+    badge: {
+       marginLeft: spacing.md ,
+       marginTop: spacing.lg,
+       marginBottom: spacing["2xs"],
     },
     titleInput: {
       fontSize: 24,
@@ -49,6 +53,7 @@ function getStyleForTheme(theme: ThemeScheme) {
       backgroundColor: colors.layer.solid.medium,
       color: colors.text.primary,
       borderWidth: 0,
+      borderBottomWidth: 1,
     },
     section: {
       marginBottom: spacing.sm,
@@ -196,17 +201,19 @@ export default function EstimateScreen() {
           <ThemeSwitcher />
           <AddButton text="Add" onPress={handleAddSectionPress} />
         </View>
-        <View style={styles.titleInputContainer}>
-          <TextField
-            style={styles.titleInput}
-            value={estimate.title}
-            multiline
-            numberOfLines={2}
-            onChangeText={updateTitle}
-            placeholder="Enter estimate title"
-            placeholderTextColor={colors.text.tertiary}
-          />
-        </View>
+        <Badge
+          type="Draft"
+          style={styles.badge}
+        />
+        <TextField
+          style={styles.titleInput}
+          value={estimate.title}
+          multiline
+          numberOfLines={2}
+          onChangeText={updateTitle}
+          placeholder="Enter estimate title"
+          placeholderTextColor={colors.text.tertiary}
+        />
         {estimate.sections.map((section) => (
           <View key={section.id} style={styles.section}>
             <Pressable
