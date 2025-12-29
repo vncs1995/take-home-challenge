@@ -27,8 +27,7 @@ function getStyleForTheme(theme: ThemeScheme) {
   const colors = getColors(theme);
 
   return StyleSheet.create({
-    wrapper: {
-    },
+    wrapper: {},
     label: {
       position: "absolute",
       top: -8,
@@ -37,7 +36,7 @@ function getStyleForTheme(theme: ThemeScheme) {
       backgroundColor: colors.layer.solid.light,
       paddingHorizontal: spacing["3xs"],
       color: colors.text.secondary,
-      ...customFonts.regular.text.xxs
+      ...customFonts.regular.text.xxs,
     },
     trigger: {
       flexDirection: "row",
@@ -47,6 +46,12 @@ function getStyleForTheme(theme: ThemeScheme) {
       borderColor: colors.outline.medium,
       borderRadius: borderRadius.md,
       paddingRight: spacing.lg,
+    },
+    textField: {
+      flex: 1,
+      marginRight: 16,
+      borderWidth: 0,
+      backgroundColor: "transparent",
     },
     option: {
       flexDirection: "row",
@@ -71,9 +76,7 @@ function getStyleForTheme(theme: ThemeScheme) {
       borderColor: colors.outline.medium,
       borderRadius: borderRadius.md,
     },
-    optionList: {
-
-    },
+    optionList: {},
   });
 }
 
@@ -113,7 +116,7 @@ export const UomPicker = ({ value, onSelect }: UomPickerProps) => {
           onFocus={() => {
             setIsOpen(!isOpen);
           }}
-          style={{ flex:1, marginRight: 16, borderWidth: 0, backgroundColor: "transparent" }}
+          style={styles.textField}
         />
         <Ionicons
           name={isOpen ? "chevron-up" : "chevron-down"}
