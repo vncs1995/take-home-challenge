@@ -1,5 +1,5 @@
 import React from "react"
-import { View, StyleSheet } from "react-native"
+import { View, StyleSheet, Platform } from "react-native"
 import { Button } from "../common/components/Button"
 import { EstimateRow, EstimateSection, UnitOfMeasure } from "@/data"
 import { useState } from "react"
@@ -8,8 +8,6 @@ import { CurrencyField } from "../common/components/CurrencyField"
 import { QuantityField } from "../common/components/QuantityField"
 import { UomPicker } from "../common/components/UomPicker"
 import { numbersAliasTokens } from "../common/theme/tokens/alias/numbers"
-import { type ThemeScheme } from "../common/theme/types"
-import { useCurrentThemeScheme } from "../common/hooks/useCurrentThemeScheme"
 
 type EditFormProps = {
 	mode: "item" | "section"
@@ -23,7 +21,7 @@ function isEstimateRow(data: any): data is EstimateRow {
 	return "price" in data && "quantity" in data && "uom" in data
 }
 
-function getStyleForTheme(theme: ThemeScheme) {
+function getStyle() {
 	const { spacing } = numbersAliasTokens
 
 	return StyleSheet.create({
@@ -54,8 +52,7 @@ function getStyleForTheme(theme: ThemeScheme) {
 }
 
 export function EditForm({ mode, data, onSave, onClose, showCancel }: EditFormProps) {
-	const { value: theme } = useCurrentThemeScheme()
-	const styles = getStyleForTheme(theme)
+	const styles = getStyle()
 
 	const [title, setTitle] = useState(data.title)
 	const [price, setPrice] = useState(
@@ -91,6 +88,53 @@ export function EditForm({ mode, data, onSave, onClose, showCancel }: EditFormPr
 		onClose?.()
 	}
 
+	const renderWebForm = () => (
+		<>
+			<View style={styles.field}>
+				<CurrencyField
+					value={price}
+					onChangeText={setPrice}
+					label="Cost"
+				/>
+			</View>
+			<View style={styles.field}>
+				<UomPicker value={uom} onSelect={setUom} />
+			</View>
+			<View style={styles.field}>
+				<TextField
+					value={quantity.toString()}
+					onChangeText={(text) => setQuantity(parseInt(text) || 1)}
+					keyboardType="number-pad"
+					label="Quantity"
+				/>
+			</View>
+		</>
+	)
+
+	const renderMobileForm = () => (
+		<>
+			<View style={styles.row}>
+				<View style={styles.halfField}>
+					<CurrencyField
+						value={price}
+						onChangeText={setPrice}
+						label="Cost"
+					/>
+				</View>
+				<View style={styles.halfField}>
+					<UomPicker value={uom} onSelect={setUom} />
+				</View>
+			</View>
+			<View style={styles.field}>
+				<QuantityField
+					value={quantity}
+					onDecrement={handleDecrement}
+					onIncrement={handleIncrement}
+				/>
+			</View>
+		</>
+	)
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.field}>
@@ -102,25 +146,7 @@ export function EditForm({ mode, data, onSave, onClose, showCancel }: EditFormPr
 			</View>
 
 			{mode === "item" && (
-				<>
-					<View style={styles.field}>
-						<CurrencyField
-							value={price}
-							onChangeText={setPrice}
-							label="Cost"
-						/>
-					</View>
-					<View style={styles.field}>
-						<QuantityField
-							value={quantity}
-							onDecrement={handleDecrement}
-							onIncrement={handleIncrement}
-						/>
-					</View>
-					<View style={styles.field}>
-						<UomPicker value={uom} onSelect={setUom} />
-					</View>
-				</>
+				Platform.OS === "web" ? renderWebForm() : renderMobileForm()
 			)}
 
 			<View style={styles.formActions}>

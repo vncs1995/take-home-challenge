@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Pressable } from "react-native";
+import { View, StyleSheet, Pressable, Platform } from "react-native";
 import { Button } from "../common/components/Button";
 import { Text } from "../common/components/Text";
 import { UnitOfMeasure } from "@/data";
@@ -14,20 +14,22 @@ import { useCurrentThemeScheme } from "../common/hooks/useCurrentThemeScheme";
 
 type FormMode = "add-item" | "add-section";
 
+type SwitcherProps = {
+  value: FormMode;
+  onChange: (mode: FormMode) => void;
+};
+
 type AddFormProps = {
   mode?: FormMode;
   onSave: (data: any) => void;
 };
 
-function getStyleForTheme(theme: ThemeScheme, showSwitcher: boolean) {
+function getSwitcherStyles(theme: ThemeScheme) {
   const { spacing, borderRadius, outlineHeight } = numbersAliasTokens;
   const colors = getColors(theme);
 
   return StyleSheet.create({
     container: {
-      padding: spacing.sm,
-    },
-    switcherContainer: {
       marginBottom: spacing.md,
     },
     switcher: {
@@ -36,7 +38,7 @@ function getStyleForTheme(theme: ThemeScheme, showSwitcher: boolean) {
       borderRadius: borderRadius.sm,
       padding: outlineHeight.sm,
     },
-    switcherOption: {
+    option: {
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
@@ -44,14 +46,70 @@ function getStyleForTheme(theme: ThemeScheme, showSwitcher: boolean) {
       paddingHorizontal: spacing.sm,
       borderRadius: borderRadius.sm,
     },
-    switcherOptionSelected: {
+    optionSelected: {
       backgroundColor: colors.layer.solid.light,
     },
-    switcherText: {
+    text: {
       color: colors.text.tertiary,
     },
-    switcherTextSelected: {
+    textSelected: {
       color: colors.text.primary,
+    },
+  });
+}
+
+function Switcher({ value, onChange }: SwitcherProps) {
+  const { value: theme } = useCurrentThemeScheme();
+  const styles = getSwitcherStyles(theme);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.switcher}>
+        <Pressable
+          style={[
+            styles.option,
+            value === "add-item" && styles.optionSelected,
+          ]}
+          onPress={() => onChange("add-item")}
+        >
+          <Text
+            size="sm"
+            style={[
+              styles.text,
+              value === "add-item" && styles.textSelected,
+            ]}
+          >
+            Add Item
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[
+            styles.option,
+            value === "add-section" && styles.optionSelected,
+          ]}
+          onPress={() => onChange("add-section")}
+        >
+          <Text
+            size="sm"
+            style={[
+              styles.text,
+              value === "add-section" && styles.textSelected,
+            ]}
+          >
+            Add Group
+          </Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+function getStyle() {
+  const { spacing } = numbersAliasTokens;
+
+  return StyleSheet.create({
+    container: {
+      padding: spacing.sm,
     },
     field: {
       marginBottom: spacing.sm,
@@ -78,9 +136,8 @@ function getStyleForTheme(theme: ThemeScheme, showSwitcher: boolean) {
 }
 
 export function AddForm({ mode: modeProp, onSave }: AddFormProps) {
-  const { value: theme } = useCurrentThemeScheme();
   const showSwitcher = !modeProp;
-  const styles = getStyleForTheme(theme, showSwitcher);
+  const styles = getStyle();
 
   const [internalMode, setInternalMode] = useState<FormMode>("add-item");
   const mode = modeProp || internalMode;
@@ -126,47 +183,55 @@ export function AddForm({ mode: modeProp, onSave }: AddFormProps) {
     title.trim().length > 0 &&
     (mode === "add-section" || parseFloat(price) > 0);
 
+  const renderWebForm = () => (
+    <>
+      <View style={styles.field}>
+        <TextField
+          value={quantity.toString()}
+          onChangeText={(text) => setQuantity(parseInt(text) || 1)}
+          keyboardType="number-pad"
+          label="Quantity"
+        />
+      </View>
+      <View style={styles.field}>
+        <CurrencyField
+          value={price}
+          onChangeText={setPrice}
+          label="Cost"
+        />
+      </View>
+      <View style={styles.field}>
+        <UomPicker value={uom} onSelect={setUom} />
+      </View>
+    </>
+  );
+
+  const renderMobileForm = () => (
+    <>
+      <View style={styles.row}>
+        <View style={styles.halfField}>
+          <CurrencyField
+            value={price}
+            onChangeText={setPrice}
+            label="Cost"
+          />
+        </View>
+        <View style={styles.halfField}>
+          <UomPicker value={uom} onSelect={setUom} />
+        </View>
+      </View>
+      <QuantityField
+        value={quantity}
+        onDecrement={handleDecrement}
+        onIncrement={handleIncrement}
+      />
+    </>
+  );
+
   return (
     <View style={styles.container}>
       {showSwitcher && (
-        <View style={styles.switcherContainer}>
-          <View style={styles.switcher}>
-            <Pressable
-              style={[
-                styles.switcherOption,
-                internalMode === "add-item" && styles.switcherOptionSelected,
-              ]}
-              onPress={() => setInternalMode("add-item")}
-            >
-              <Text
-                size="sm"
-                style={[
-                  styles.switcherText,
-                  internalMode === "add-item" && styles.switcherTextSelected,
-                ]}
-              >
-                Add Item
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[
-                styles.switcherOption,
-                internalMode === "add-section" && styles.switcherOptionSelected,
-              ]}
-              onPress={() => setInternalMode("add-section")}
-            >
-              <Text
-                size="sm"
-                style={[
-                  styles.switcherText,
-                  internalMode === "add-section" && styles.switcherTextSelected,
-                ]}
-              >
-                Add Group
-              </Text>
-            </Pressable>
-          </View>
-        </View>
+        <Switcher value={internalMode} onChange={setInternalMode} />
       )}
 
       <View style={styles.field}>
@@ -178,25 +243,7 @@ export function AddForm({ mode: modeProp, onSave }: AddFormProps) {
       </View>
 
       {mode === "add-item" && (
-        <>
-          <View style={styles.field}>
-            <CurrencyField
-              value={price}
-              onChangeText={setPrice}
-              label="Cost"
-            />
-          </View>
-          <View style={styles.field}>
-            <QuantityField
-              value={quantity}
-              onDecrement={handleDecrement}
-              onIncrement={handleIncrement}
-            />
-          </View>
-          <View style={styles.field}>
-            <UomPicker value={uom} onSelect={setUom} />
-          </View>
-        </>
+        Platform.OS === "web" ? renderWebForm() : renderMobileForm()
       )}
 
       <View style={styles.formActions}>
