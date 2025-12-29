@@ -4,6 +4,7 @@ import { Button } from "../common/components/Button";
 import { Text } from "../common/components/Text";
 import { UnitOfMeasure } from "@/data";
 import { TextField } from "../common/components/TextField";
+import { CurrencyField } from "../common/components/CurrencyField";
 import { QuantityField } from "../common/components/QuantityField";
 import { UomPicker } from "../common/components/UomPicker";
 import { numbersAliasTokens } from "../common/theme/tokens/alias/numbers";
@@ -85,7 +86,7 @@ export function AddForm({ mode: modeProp, onSave }: AddFormProps) {
   const mode = modeProp || internalMode;
 
   const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState("0");
   const [quantity, setQuantity] = useState(1);
   const [uom, setUom] = useState<UnitOfMeasure>("EA");
 
@@ -99,7 +100,7 @@ export function AddForm({ mode: modeProp, onSave }: AddFormProps) {
 
   const resetForm = () => {
     setTitle("");
-    setPrice("");
+    setPrice("0");
     setQuantity(1);
     setUom("EA");
   };
@@ -123,7 +124,7 @@ export function AddForm({ mode: modeProp, onSave }: AddFormProps) {
 
   const isValid =
     title.trim().length > 0 &&
-    (mode === "add-section" || price.trim().length > 0);
+    (mode === "add-section" || parseFloat(price) > 0);
 
   return (
     <View style={styles.container}>
@@ -179,10 +180,9 @@ export function AddForm({ mode: modeProp, onSave }: AddFormProps) {
       {mode === "add-item" && (
         <>
           <View style={styles.field}>
-            <TextField
+            <CurrencyField
               value={price}
               onChangeText={setPrice}
-              keyboardType="decimal-pad"
               label="Cost"
             />
           </View>

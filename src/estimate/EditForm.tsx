@@ -4,6 +4,7 @@ import { Button } from "../common/components/Button"
 import { EstimateRow, EstimateSection, UnitOfMeasure } from "@/data"
 import { useState } from "react"
 import { TextField } from "../common/components/TextField"
+import { CurrencyField } from "../common/components/CurrencyField"
 import { QuantityField } from "../common/components/QuantityField"
 import { UomPicker } from "../common/components/UomPicker"
 import { numbersAliasTokens } from "../common/theme/tokens/alias/numbers"
@@ -87,6 +88,7 @@ export function EditForm({ mode, data, onSave, onClose, showCancel }: EditFormPr
 		} else {
 			onSave({ title })
 		}
+		onClose?.()
 	}
 
 	return (
@@ -102,10 +104,9 @@ export function EditForm({ mode, data, onSave, onClose, showCancel }: EditFormPr
 			{mode === "item" && (
 				<>
 					<View style={styles.field}>
-						<TextField
+						<CurrencyField
 							value={price}
 							onChangeText={setPrice}
-							keyboardType="decimal-pad"
 							label="Cost"
 						/>
 					</View>

@@ -18,6 +18,7 @@ import { customFonts } from "../common/theme/fonts";
 import { type ThemeScheme } from "../common/theme/types";
 import { useCurrentThemeScheme } from "../common/hooks/useCurrentThemeScheme";
 import { useState } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 function getStyleForTheme(theme: ThemeScheme) {
   const { spacing } = numbersAliasTokens;
@@ -46,30 +47,30 @@ function getStyleForTheme(theme: ThemeScheme) {
     },
     formContainer: {
       flex: 0.5,
-	  height: "auto",
+      height: "auto",
       borderWidth: 1,
       borderColor: colors.outline.medium,
-	  borderRadius: 8,
+      borderRadius: 8,
       backgroundColor: colors.layer.solid.light,
       padding: spacing.md,
-	  marginRight: spacing["3xl"],
+      marginRight: spacing["3xl"],
     },
-  titleInput: {
-    ...customFonts.bold.headline.sm,
-    backgroundColor: colors.layer.solid.light,
-    color: colors.text.primary,
-    borderWidth: 0,
-    marginBottom: spacing.lg,
-  },
-  sectionsContainer: {
-    borderWidth: 1,
-    borderColor: colors.outline.medium,
-    borderRadius: 8,
-  },
-  section: {
+    titleInput: {
+      ...customFonts.bold.headline.sm,
+      backgroundColor: colors.layer.solid.light,
+      color: colors.text.primary,
+      borderWidth: 0,
+      marginBottom: spacing.lg,
+    },
+    sectionsContainer: {
+      borderWidth: 1,
+      borderColor: colors.outline.medium,
+      borderRadius: 8,
+    },
+    section: {
       backgroundColor: colors.layer.solid.light,
       borderRadius: 8,
-	  overflow: "hidden",
+      overflow: "hidden",
     },
     selectedSection: {
       backgroundColor: colors.layer.solid.medium,
@@ -90,6 +91,11 @@ function getStyleForTheme(theme: ThemeScheme) {
     },
     sectionHeaderText: {
       color: colors.text.primary,
+    },
+    sectionHeaderRight: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing["3xs"],
     },
     tableRow: {
       flexDirection: "row",
@@ -213,7 +219,7 @@ export default function EstimateScreenDesktop() {
       {/* Main content */}
       <View style={styles.content}>
         {/* Left side - Table */}
-        <ScrollView 
+        <ScrollView
           style={styles.tableContainer}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
@@ -225,62 +231,71 @@ export default function EstimateScreenDesktop() {
             placeholder="Enter estimate title"
             placeholderTextColor={colors.text.tertiary}
           />
-		  <View style={styles.sectionsContainer}>
-          {estimate.sections.map((section) => (
-            <View key={section.id} style={styles.section}>
-              <Pressable
-                style={[
-                  styles.sectionHeader,
-                  editMode?.type === "section" &&
-                    editMode.data.id === section.id &&
-                    styles.selectedSection,
-                ]}
-                onPress={() => handleSectionPress(section)}
-              >
-                <View style={styles.sectionHeaderLeft}>
-                  <Text style={styles.sectionHeaderText}>{section.title}</Text>
-                  <AddButton onPress={() => handleAddPress(section.id)} />
-                </View>
-                <Text style={styles.sectionHeaderText}>
-                  ${calculateSectionTotal(section).toFixed(2)}
-                </Text>
-              </Pressable>
-              {/* Table rows */}
-              {section.rows.map((row) => (
+          <View style={styles.sectionsContainer}>
+            {estimate.sections.map((section) => (
+              <View key={section.id} style={styles.section}>
                 <Pressable
-                  key={row.id}
                   style={[
-                    styles.tableRow,
-                    editMode?.type === "item" &&
-                      editMode.data.id === row.id &&
-                      styles.selectedRow,
+                    styles.sectionHeader,
+                    editMode?.type === "section" &&
+                      editMode.data.id === section.id &&
+                      styles.selectedSection,
                   ]}
-                  onPress={() => handleItemPress(row)}
+                  onPress={() => handleSectionPress(section)}
                 >
-                  <View style={styles.rowLeftContent}>
-                    <Text size="md" style={styles.rowTitle}>
-                      {row.title}
+                  <View style={styles.sectionHeaderLeft}>
+                    <Text style={styles.sectionHeaderText}>
+                      {section.title}
                     </Text>
-                    <Text size="sm" style={styles.rowPriceDetails}>
-                      ${row.price.toFixed(2)} × {row.quantity} {row.uom}
-                    </Text>
+                    <AddButton onPress={() => handleAddPress(section.id)} />
                   </View>
-                  <Text style={styles.rowTotal}>
-                    ${(row.price * row.quantity).toFixed(2)}
-                  </Text>
+                  <View style={styles.sectionHeaderRight}>
+                    <Text style={styles.sectionHeaderText}>
+                      ${calculateSectionTotal(section).toFixed(2)}
+                    </Text>
+                    <Ionicons
+                      name="ellipsis-vertical"
+                      size={24}
+                      color={colors.icon.primary}
+                    />
+                  </View>
                 </Pressable>
-              ))}
-            </View>
-          ))}
+                {/* Table rows */}
+                {section.rows.map((row) => (
+                  <Pressable
+                    key={row.id}
+                    style={[
+                      styles.tableRow,
+                      editMode?.type === "item" &&
+                        editMode.data.id === row.id &&
+                        styles.selectedRow,
+                    ]}
+                    onPress={() => handleItemPress(row)}
+                  >
+                    <View style={styles.rowLeftContent}>
+                      <Text size="md" style={styles.rowTitle}>
+                        {row.title}
+                      </Text>
+                      <Text size="sm" style={styles.rowPriceDetails}>
+                        ${row.price.toFixed(2)} × {row.quantity} {row.uom}
+                      </Text>
+                    </View>
+                    <Text style={styles.rowTotal}>
+                      ${(row.price * row.quantity).toFixed(2)}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            ))}
 
-          <View style={styles.estimateTotal}>
-            <Text style={styles.estimateTotalText} weight="bold">
-              Total:
-            </Text>
-            <Text style={styles.estimateTotalText} weight="bold">
-              ${calculateEstimateTotal(estimate).toFixed(2)}
-            </Text>
-		  </View>
+            <View style={styles.estimateTotal}>
+              <Text style={styles.estimateTotalText} weight="bold">
+                Total:
+              </Text>
+              <Text style={styles.estimateTotalText} weight="bold">
+                ${calculateEstimateTotal(estimate).toFixed(2)}
+              </Text>
+            </View>
           </View>
         </ScrollView>
 

@@ -53,9 +53,10 @@ function getStyleForTheme(theme: ThemeScheme) {
       backgroundColor: colors.layer.solid.medium,
       color: colors.text.primary,
       borderWidth: 0,
-      borderBottomWidth: 1,
     },
     section: {
+      borderTopWidth: 1,
+      borderTopColor: colors.outline.light,
       marginBottom: spacing.sm,
       backgroundColor: colors.layer.solid.medium,
     },
@@ -278,7 +279,6 @@ export default function EstimateScreen() {
                 ? handleSaveNewSection
                 : handleSaveNewItem
             }
-            onClose={handleCloseBottomSheet}
           />
         )}
       </BottomSheet>
