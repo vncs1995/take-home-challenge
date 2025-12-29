@@ -15,7 +15,7 @@ type QuantityFieldProps = {
 };
 
 function getStyleForTheme(theme: ThemeScheme) {
-  const { spacing, borderRadius } = numbersAliasTokens;
+  const { spacing, borderRadius, sizing } = numbersAliasTokens;
   const colors = getColors(theme);
 
   return StyleSheet.create({
@@ -29,7 +29,7 @@ function getStyleForTheme(theme: ThemeScheme) {
       zIndex: 2,
       backgroundColor: colors.layer.solid.light,
       paddingHorizontal: spacing["3xs"],
-      borderRadius: 999,
+      borderRadius: borderRadius.md,
       color: colors.text.secondary,
     },
     container: {
@@ -43,8 +43,8 @@ function getStyleForTheme(theme: ThemeScheme) {
       paddingHorizontal: spacing.sm,
     },
     button: {
-      width: 44,
-      height: 44,
+      width: sizing.icon.lg,
+      height: sizing.icon.lg,
       borderRadius: borderRadius.sm,
       alignItems: "center",
       justifyContent: "center",

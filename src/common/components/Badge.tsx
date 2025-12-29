@@ -1,6 +1,5 @@
 import { View, StyleSheet, ViewStyle, StyleProp } from "react-native";
 import { Text } from "./Text";
-import { getColors } from "../theme/tokens/alias/colors";
 import { numbersAliasTokens } from "../theme/tokens/alias/numbers";
 import { getComponentTokens } from "../theme/tokens/components";
 import { type ThemeScheme } from "../theme/types";
@@ -12,7 +11,6 @@ interface BadgeProps {
 }
 
 function getStyleForTheme(theme: ThemeScheme) {
-  const colors = getColors(theme);
   const componentTokens = getComponentTokens(theme);
   const { spacing, borderRadius } = numbersAliasTokens;
 
