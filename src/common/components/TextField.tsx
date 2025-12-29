@@ -11,7 +11,7 @@ import { numbersAliasTokens } from "../theme/tokens/alias/numbers";
 import { getColors } from "../theme/tokens/alias/colors";
 import { type ThemeScheme } from "../theme/types";
 import { useCurrentThemeScheme } from "../hooks/useCurrentThemeScheme";
-import { customFonts } from "../theme/fonts";
+import { customFonts } from '../theme/fonts';
 
 export type TextFieldProps = TextInputProps & {
   label?: string;
@@ -38,13 +38,12 @@ function getStyleForTheme(theme: ThemeScheme) {
       position: "absolute",
       left: spacing.sm,
       zIndex: 2,
-      // little "chip" behind label like in iOS floating label fields
       backgroundColor: colors.layer.solid.light,
       paddingHorizontal: spacing["3xs"],
-      // helps the chip look clean
-      borderRadius: 999,
+      borderRadius: borderRadius.md,
       // don't block taps on the input
       pointerEvents: "none",
+      ...customFonts.regular.text.xxs
     },
 
     input: {
@@ -81,14 +80,6 @@ function getStyleForTheme(theme: ThemeScheme) {
   });
 }
 
-function getLabelColors(theme: ThemeScheme) {
-  const colors = getColors(theme);
-  return {
-    inactive: colors.text.tertiary,
-    active: colors.text.secondary,
-  };
-}
-
 export const TextField = forwardRef<TextInput, TextFieldProps>(
   function TextField(
     { label, value, defaultValue, onFocus, onBlur, style, multiline, ...props },
@@ -96,7 +87,6 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(
   ) {
     const { value: theme } = useCurrentThemeScheme();
     const styles = getStyleForTheme(theme);
-    const labelColors = getLabelColors(theme);
     const colors = getColors(theme);
 
     const [isFocused, setIsFocused] = useState(false);
@@ -128,7 +118,7 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(
       }),
       color: animatedLabel.interpolate({
         inputRange: [0, 1],
-        outputRange: [labelColors.inactive, labelColors.active],
+        outputRange: [colors.text.tertiary, colors.text.secondary],
       }),
     };
 

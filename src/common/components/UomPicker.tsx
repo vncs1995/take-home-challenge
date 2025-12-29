@@ -152,7 +152,7 @@ export const UomPicker = ({ value, onSelect }: UomPickerProps) => {
       <>
         <View style={triggerStyles.wrapper}>
           <Text size="xs" style={triggerStyles.label}>
-            Unit of Measure
+            Unit
           </Text>
           <Pressable style={triggerStyles.trigger} onPress={handleTriggerPress}>
             <Text size="md" style={triggerStyles.triggerText}>
@@ -168,8 +168,9 @@ export const UomPicker = ({ value, onSelect }: UomPickerProps) => {
 
         <BottomSheet
           ref={bottomSheetRef}
-          title="Select Unit of Measure"
+          title="Unit of measurement"
           onDismissed={handleDismiss}
+          iconName="arrow-back-outline"
         >
           <View style={styles.container}>
             <View style={styles.searchContainer}>

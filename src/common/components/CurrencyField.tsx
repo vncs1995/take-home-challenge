@@ -60,9 +60,9 @@ function getStyleForTheme(theme: ThemeScheme) {
       zIndex: 2,
       backgroundColor: colors.layer.solid.light,
       paddingHorizontal: spacing["3xs"],
-      borderRadius: 999,
+      borderRadius: borderRadius.md,
       color: colors.text.secondary,
-      fontSize: 12,
+      ...customFonts.regular.text.xxs,
     },
     container: {
       flexDirection: "row",

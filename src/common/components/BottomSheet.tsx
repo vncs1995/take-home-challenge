@@ -27,6 +27,7 @@ export type BottomSheetProps = Omit<ModalProps, "visible" | "transparent"> & {
   title?: string;
   closeOnBackdropPress?: boolean;
   onDismissed?: () => void;
+  iconName?: keyof typeof Ionicons.glyphMap;
 };
 
 function getStyleForTheme(theme: ThemeScheme) {
@@ -110,6 +111,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
       onDismissed,
       onRequestClose,
       animationType = "slide",
+      iconName = "close",
       ...modalProps
     },
     ref
@@ -162,7 +164,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
                 accessibilityLabel="Close"
                 style={styles.closeButton}
               >
-                <Ionicons name="close" size={sizing.icon.lg} color={colors.icon.primary} />
+                <Ionicons name={iconName} size={sizing.icon.lg} color={colors.icon.primary} />
               </Pressable>
 
               {!!title && (
