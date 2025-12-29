@@ -15,7 +15,7 @@ import { numbersAliasTokens } from "../theme/tokens/alias/numbers";
 import { type ThemeScheme } from "../theme/types";
 
 interface ButtonProps extends Omit<PressableProps, "style"> {
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "destructive";
   style?: StyleProp<ViewStyle>;
 }
 
@@ -38,6 +38,9 @@ function getStyleForTheme(theme: ThemeScheme) {
     text: {
       color: colors.text.white,
     },
+    destructiveText: {
+      color: colors.text.danger,
+    },
   });
 }
 
@@ -53,6 +56,7 @@ export const Button = forwardRef<View, PropsWithChildren<ButtonProps>>(
     const styles = getStyleForTheme(theme);
 
     function getBackground(pressed: boolean) {
+      if (variant === "destructive") return "transparent";
       const bgSet = componentTokens.button.background[variant];
       if (pressed) return bgSet.pressed;
       if (hovered) return bgSet.hover;
@@ -73,7 +77,11 @@ export const Button = forwardRef<View, PropsWithChildren<ButtonProps>>(
         onHoverOut={() => setHovered(false)}
         {...props}
       >
-        <Text weight="bold" size="sm" style={styles.text}>
+        <Text 
+          weight="bold" 
+          size="sm" 
+          style={variant === "destructive" ? styles.destructiveText : styles.text}
+        >
           {children}
         </Text>
       </Pressable>

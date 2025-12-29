@@ -125,7 +125,7 @@ export function EditForm({ mode, data, onSave, onClose, showCancel }: EditFormPr
 
 			<View style={styles.formActions}>
 				{showCancel && onClose && (
-					<Button variant="secondary" onPress={onClose} style={styles.button}>
+					<Button variant="destructive" onPress={onClose} style={styles.button}>
 						Cancel
 					</Button>
 				)}
