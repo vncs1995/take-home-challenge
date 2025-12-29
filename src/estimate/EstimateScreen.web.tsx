@@ -28,39 +28,36 @@ function getStyleForTheme(theme: ThemeScheme) {
     container: {
       flex: 1,
       backgroundColor: colors.layer.solid.light,
+	  paddingHorizontal: spacing["3xl"],
     },
     header: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      padding: spacing.md,
+      paddingVertical: spacing.md,
       backgroundColor: colors.layer.solid.light,
-      gap: spacing.sm,
     },
     content: {
       flex: 1,
       flexDirection: "row",
     },
-    tableContainer: {
-      flex: 1,
-      padding: spacing["3xl"],
-    },
-    formContainer: {
-      flex: 0.5,
-      height: "auto",
-      borderWidth: 1,
-      borderColor: colors.outline.medium,
-      borderRadius: 8,
-      backgroundColor: colors.layer.solid.light,
-      padding: spacing.md,
-      marginRight: spacing["3xl"],
-    },
-    titleInput: {
+	titleInput: {
       ...customFonts.bold.headline.sm,
       backgroundColor: colors.layer.solid.light,
       color: colors.text.primary,
       borderWidth: 0,
-      marginBottom: spacing.lg,
+      marginBottom: spacing.xl,
+	  paddingLeft: 0,
+    },
+    tableContainer: {
+      flex: 1,
+      marginRight: spacing["3xl"],
+    },
+    formContainer: {
+      borderWidth: 1,
+      borderColor: colors.outline.medium,
+      borderRadius: 8,
+      alignSelf: "flex-start",
     },
     sectionsContainer: {
       borderWidth: 1,
@@ -217,20 +214,20 @@ export default function EstimateScreenDesktop() {
       </View>
 
       {/* Main content */}
-      <View style={styles.content}>
         {/* Left side - Table */}
+		<TextField
+		  style={styles.titleInput}
+		  value={estimate.title}
+		  onChangeText={updateTitle}
+		  placeholder="Enter estimate title"
+		  placeholderTextColor={colors.text.tertiary}
+		/>
+      <View style={styles.content}>
         <ScrollView
           style={styles.tableContainer}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
         >
-          <TextField
-            style={styles.titleInput}
-            value={estimate.title}
-            onChangeText={updateTitle}
-            placeholder="Enter estimate title"
-            placeholderTextColor={colors.text.tertiary}
-          />
           <View style={styles.sectionsContainer}>
             {estimate.sections.map((section) => (
               <View key={section.id} style={styles.section}>
@@ -244,6 +241,7 @@ export default function EstimateScreenDesktop() {
                   onPress={() => handleSectionPress(section)}
                 >
                   <View style={styles.sectionHeaderLeft}>
+					<Ionicons name="chevron-down" size={24} color={colors.icon.primary} />
                     <Text style={styles.sectionHeaderText}>
                       {section.title}
                     </Text>

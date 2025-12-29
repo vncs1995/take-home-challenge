@@ -1,5 +1,6 @@
 import React from "react"
 import { View, StyleSheet, Platform } from "react-native"
+import { Text } from "../common/components/Text"
 import { Button } from "../common/components/Button"
 import { EstimateRow, EstimateSection, UnitOfMeasure } from "@/data"
 import { useState } from "react"
@@ -8,6 +9,9 @@ import { CurrencyField } from "../common/components/CurrencyField"
 import { QuantityField } from "../common/components/QuantityField"
 import { UomPicker } from "../common/components/UomPicker"
 import { numbersAliasTokens } from "../common/theme/tokens/alias/numbers"
+import { getColors } from "../common/theme/tokens/alias/colors"
+import { useCurrentThemeScheme } from "../common/hooks/useCurrentThemeScheme"
+import type { ThemeScheme } from "../common/theme/types"
 
 type EditFormProps = {
 	mode: "item" | "section"
@@ -21,12 +25,17 @@ function isEstimateRow(data: any): data is EstimateRow {
 	return "price" in data && "quantity" in data && "uom" in data
 }
 
-function getStyle() {
+function getStyle(theme: ThemeScheme) {
 	const { spacing } = numbersAliasTokens
+	const colors = getColors(theme)
 
 	return StyleSheet.create({
 		container: {
 			padding: spacing.sm,
+		},
+		editItemHeader: {
+			color: colors.text.secondary,
+			marginBottom: spacing.md,
 		},
 		field: {
 			marginBottom: spacing.sm,
@@ -48,11 +57,21 @@ function getStyle() {
 		button: {
 			flex: 1,
 		},
+		totalRow: {
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+			marginTop: spacing.sm,
+		},
+		totalLabel: {
+			color: colors.text.secondary,
+		},
 	})
 }
 
 export function EditForm({ mode, data, onSave, onClose, showCancel }: EditFormProps) {
-	const styles = getStyle()
+	const { value: theme } = useCurrentThemeScheme()
+	const styles = getStyle(theme)
 
 	const [title, setTitle] = useState(data.title)
 	const [price, setPrice] = useState(
@@ -88,6 +107,8 @@ export function EditForm({ mode, data, onSave, onClose, showCancel }: EditFormPr
 		onClose?.()
 	}
 
+	const total = (parseFloat(price) || 0) * quantity
+
 	const renderWebForm = () => (
 		<>
 			<View style={styles.field}>
@@ -107,6 +128,12 @@ export function EditForm({ mode, data, onSave, onClose, showCancel }: EditFormPr
 					keyboardType="number-pad"
 					label="Quantity"
 				/>
+			</View>
+			<View style={styles.totalRow}>
+				<Text style={styles.totalLabel}>Total</Text>
+				<Text weight="bold">
+					${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+				</Text>
 			</View>
 		</>
 	)
@@ -137,6 +164,7 @@ export function EditForm({ mode, data, onSave, onClose, showCancel }: EditFormPr
 
 	return (
 		<View style={styles.container}>
+			{Platform.OS === "web" && <Text style={styles.editItemHeader}>Edit Item </Text>}
 			<View style={styles.field}>
 				<TextField
 					value={title}
