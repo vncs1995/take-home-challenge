@@ -5,8 +5,8 @@ import { EstimateRow, EstimateSection, UnitOfMeasure } from "@/data"
 import { useState } from "react"
 import { TextField } from "../common/components/TextField"
 import { QuantityField } from "../common/components/QuantityField"
+import { UomPicker } from "../common/components/UomPicker"
 import { numbersAliasTokens } from "../common/theme/tokens/alias/numbers"
-import { getColors } from "../common/theme/tokens/alias/colors"
 import { type ThemeScheme } from "../common/theme/types"
 import { useCurrentThemeScheme } from "../common/hooks/useCurrentThemeScheme"
 
@@ -14,7 +14,8 @@ type EditFormProps = {
 	mode: "item" | "section"
 	data: EstimateRow | EstimateSection
 	onSave: (updates: any) => void
-	onClose: () => void
+	onClose?: () => void
+	showCancel?: boolean
 }
 
 function isEstimateRow(data: any): data is EstimateRow {
@@ -22,8 +23,7 @@ function isEstimateRow(data: any): data is EstimateRow {
 }
 
 function getStyleForTheme(theme: ThemeScheme) {
-	const { spacing, borderRadius } = numbersAliasTokens
-	const colors = getColors(theme)
+	const { spacing } = numbersAliasTokens
 
 	return StyleSheet.create({
 		container: {
@@ -32,14 +32,13 @@ function getStyleForTheme(theme: ThemeScheme) {
 		field: {
 			marginBottom: spacing.sm,
 		},
-		input: {
-			borderWidth: 1,
-			borderColor: colors.outline.medium,
-			borderRadius: borderRadius.sm,
-			padding: spacing.xs,
-			marginTop: spacing["3xs"],
-			backgroundColor: colors.layer.solid.light,
-			color: colors.text.primary,
+		row: {
+			flexDirection: "row",
+			gap: spacing.sm,
+			marginBottom: spacing.sm,
+		},
+		halfField: {
+			flex: 1,
 		},
 		formActions: {
 			flexDirection: "row",
@@ -53,10 +52,9 @@ function getStyleForTheme(theme: ThemeScheme) {
 	})
 }
 
-export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
+export function EditForm({ mode, data, onSave, onClose, showCancel }: EditFormProps) {
 	const { value: theme } = useCurrentThemeScheme()
 	const styles = getStyleForTheme(theme)
-	const colors = getColors(theme)
 
 	const [title, setTitle] = useState(data.title)
 	const [price, setPrice] = useState(
@@ -95,11 +93,9 @@ export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
 		<View style={styles.container}>
 			<View style={styles.field}>
 				<TextField
-					style={styles.input}
 					value={title}
 					onChangeText={setTitle}
-					label={`Enter ${mode} title`}
-					placeholderTextColor={colors.text.tertiary}
+					label={mode === "item" ? "Item title" : "Group title"}
 				/>
 			</View>
 
@@ -107,12 +103,10 @@ export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
 				<>
 					<View style={styles.field}>
 						<TextField
-							style={styles.input}
 							value={price}
 							onChangeText={setPrice}
 							keyboardType="decimal-pad"
 							label="Cost"
-							placeholderTextColor={colors.text.tertiary}
 						/>
 					</View>
 					<View style={styles.field}>
@@ -122,10 +116,18 @@ export function EditForm({ mode, data, onSave, onClose }: EditFormProps) {
 							onIncrement={handleIncrement}
 						/>
 					</View>
+					<View style={styles.field}>
+						<UomPicker value={uom} onSelect={setUom} />
+					</View>
 				</>
 			)}
 
 			<View style={styles.formActions}>
+				{showCancel && onClose && (
+					<Button variant="secondary" onPress={onClose} style={styles.button}>
+						Cancel
+					</Button>
+				)}
 				<Button onPress={handleSave} style={styles.button}>
 					Save
 				</Button>

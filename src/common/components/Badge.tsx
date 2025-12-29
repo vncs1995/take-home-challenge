@@ -21,9 +21,8 @@ function getStyleForTheme(theme: ThemeScheme) {
       flexDirection: "row",
       alignItems: "center",
       gap: spacing["3xs"],
-      backgroundColor: colors.layer.solid.medium,
-      paddingHorizontal: spacing.sm,
-      paddingVertical: spacing["3xs"],
+      backgroundColor: "transparent",
+      paddingHorizontal: spacing.xs,
       borderRadius: borderRadius.pill,
       alignSelf: "flex-start",
       borderWidth: 1,
@@ -41,7 +40,7 @@ export const Badge = ({ type, style }: BadgeProps) => {
 
   return (
     <View style={[styles.container, style]}>
-      <Text style={styles.text}>• {type}</Text>
+      <Text size="sm" style={styles.text}>• {type}</Text>
     </View>
   );
 };
