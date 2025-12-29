@@ -1,6 +1,4 @@
 import React, {
-  forwardRef,
-  useImperativeHandle,
   useState,
   useMemo,
 } from "react";
@@ -104,8 +102,7 @@ function getTriggerStyleForTheme(theme: ThemeScheme) {
   });
 }
 
-export const UomPicker = forwardRef<UomPickerRef, UomPickerProps>(
-  function UomPicker({ value, onSelect }, ref) {
+export const UomPicker = ({ value, onSelect }: UomPickerProps) => {
     const { value: theme } = useCurrentThemeScheme();
     const styles = getStyleForTheme(theme);
     const triggerStyles = getTriggerStyleForTheme(theme);
@@ -113,16 +110,6 @@ export const UomPicker = forwardRef<UomPickerRef, UomPickerProps>(
 
     const [search, setSearch] = useState("");
     const bottomSheetRef = React.useRef<BottomSheetRef>(null);
-
-    useImperativeHandle(ref, () => ({
-      present: () => {
-        bottomSheetRef.current?.present();
-      },
-      dismiss: () => {
-        bottomSheetRef.current?.dismiss();
-        setSearch("");
-      },
-    }));
 
     const filteredOptions = useMemo(() => {
       if (!search.trim()) return UOM_OPTIONS;
@@ -205,5 +192,4 @@ export const UomPicker = forwardRef<UomPickerRef, UomPickerProps>(
         </BottomSheet>
       </>
     );
-  }
-);
+  };
